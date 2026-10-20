@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{% if is_edit %}Edit {{ values.name }}{% else %}Add a trial{% endif %} · StillFree{% endblock %}
+{% block content %}
+<div class="stillfree-app">
+  <header class="sf-topbar">
+    <a class="wordmark" href="/api/dashboard" aria-label="StillFree home">stillfree<span>.</span></a>
+    <div class="sf-account">
+      <span class="sf-email">{{ user.email }}</span>
+      <form method="post" action="/api/logout">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+        <button class="sf-logout" type="submit">Log out</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="sf-form-layout">
+    <a class="sf-back-link" href="/api/dashboard"><span aria-hidden="true">←</span> Back to your trials</a>
+    <section class="sf-form-card" aria-labelledby="service-form-title">
+      <div class="sf-form-aside">
+        <p class="eyebrow">{% if is_edit %}A small update{% else %}Make a note of it{% endif %}</p>
+        <h1>{% if is_edit %}Keep your list<br>up to date.{% else %}One less thing<br>to remember.{% endif %}</h1>
+        <p>{% if is_edit %}Change the details whenever your trial changes.{% else %}Add the important bits now. You can always come back and change them later.{% endif %}</p>
+        <span class="sf-aside-orbit" aria-hidden="true"></span>
+      </div>
+      <div class="sf-form-content">
+        <p class="eyebrow">{% if is_edit %}Edit trial{% else %}New trial{% endif %}</p>
+        <h2 id="service-form-title">{% if is_edit %}Trial details{% else %}What are you trying?{% endif %}</h2>
+        <p class="sf-form-lede">Fields marked required help keep the details useful.</p>
+
+        {% if errors %}
+          <div class="sf-error-summary" role="alert" aria-labelledby="form-error-title">
+            <strong id="form-error-title">A quick check before saving</strong>
+            <ul>
+              {% for field, error in errors.items() %}<li><a href="#field-{{ field|replace('_', '-') }}">{{ error }}</a></li>{% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <form class="sf-service-form" method="post" action="{% if is_edit %}/api/services/{{ service_id }}/edit{% else %}/api/services{% endif %}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+          <div class="sf-field">
+            <label for="field-name">Service name <span>Required</span></label>
+            <input id="field-name" name="name" type="text" maxlength="120" required value="{{ values.name|default('', true) }}" autocomplete="off" aria-invalid="{{ 'true' if errors.get('name') else 'false' }}" {% if errors.get('name') %}aria-describedby="error-name"{% endif %}>
+            {% if errors.get('name') %}<p class="sf-field-error" id="error-name">{{ errors.get('name') }}</p>{% endif %}
+          </div>
+          <div class="sf-field">
+            <label for="field-category">Category <span>Required</span></label>
+            <select id="field-category" name="category" required aria-invalid="{{ 'true' if errors.get('category') else 'false' }}" {% if errors.get('category') %}aria-describedby="error-category"{% endif %}>
+              <option value="" disabled {% if not values.category %}selected{% endif %}>Choose a category</option>
+              {% for category in categories %}
+                <option value="{{ category }}" {% if values.category == category %}selected{% endif %}>{{ category }}</option>
+              {% endfor %}
+            </select>
+            {% if errors.get('category') %}<p class="sf-field-error" id="error-category">{{ errors.get('category') }}</p>{% endif %}
+          </div>
+          <div class="sf-field">
+            <label for="field-expires-on">Trial end date <span>Required</span></label>
+            <input id="field-expires-on" name="expires_on" type="date" required value="{{ values.expires_on|default('', true) }}" aria-invalid="{{ 'true' if errors.get('expires_on') else 'false' }}" {% if errors.get('expires_on') %}aria-describedby="error-expires_on"{% endif %}>
+            {% if errors.get('expires_on') %}<p class="sf-field-error" id="error-expires_on">{{ errors.get('expires_on') }}</p>{% endif %}
+          </div>
+          <div class="sf-field">
+            <label for="field-price-after-trial">Price after trial <span>Optional</span></label>
+            <div class="sf-input-prefix"><span aria-hidden="true">₹</span><input id="field-price-after-trial" name="price_after_trial" type="number" min="0" max="9999999999.99" step="0.01" inputmode="decimal" value="{{ values.price_after_trial|default('', true) }}" aria-invalid="{{ 'true' if errors.get('price_after_trial') else 'false' }}" {% if errors.get('price_after_trial') %}aria-describedby="price-hint error-price_after_trial"{% else %}aria-describedby="price-hint"{% endif %}></div>
+            <p class="sf-field-hint" id="price-hint">Amount charged after the trial, in Indian rupees. Leave blank if you’re not sure.</p>
+            {% if errors.get('price_after_trial') %}<p class="sf-field-error" id="error-price_after_trial">{{ errors.get('price_after_trial') }}</p>{% endif %}
+          </div>
+          <div class="sf-field">
+            <label for="field-cancel-url">Cancellation link <span>Optional</span></label>
+            <input id="field-cancel-url" name="cancel_url" type="url" maxlength="2048" value="{{ values.cancel_url|default('', true) }}" placeholder="https://" autocomplete="url" aria-invalid="{{ 'true' if errors.get('cancel_url') else 'false' }}" {% if errors.get('cancel_url') %}aria-describedby="cancel-hint error-cancel_url"{% else %}aria-describedby="cancel-hint"{% endif %}>
+            <p class="sf-field-hint" id="cancel-hint">A direct link to manage or cancel your subscription.</p>
+            {% if errors.get('cancel_url') %}<p class="sf-field-error" id="error-cancel_url">{{ errors.get('cancel_url') }}</p>{% endif %}
+          </div>
+          <div class="sf-form-actions">
+            <button class="sf-primary-button" type="submit">{% if is_edit %}Save changes{% else %}Save trial{% endif %}<span aria-hidden="true">→</span></button>
+            <a class="sf-cancel-form" href="/api/dashboard">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </section>
+    <p class="sf-form-footnote">Your trial list is just for you. Keep it simple, keep it current.</p>
+  </main>
+</div>
+{% endblock %}

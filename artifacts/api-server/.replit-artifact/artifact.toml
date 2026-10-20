@@ -1,0 +1,7 @@
+kind = "api"
+previewPath = "/__backend"
+title = "StillFree Python Source"
+version = "1.0.0"
+id = "3B4_FFSkEVBkAeYMFRJ2e"
+
+services = []

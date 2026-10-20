@@ -1,0 +1,11 @@
+{
+  "name": "@workspace/stillfree",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Publishing registration for the existing StillFree Python app",
+  "scripts": {
+    "dev": "pnpm --filter @workspace/api-server run dev",
+    "build": "pnpm --filter @workspace/api-server run build",
+    "start": "pnpm --filter @workspace/api-server run start"
+  }
+}

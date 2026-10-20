@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Log in · StillFree{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="brand-panel">
+    <a class="wordmark" href="/api/">stillfree<span>.</span></a>
+    <div class="brand-copy">
+      <p class="eyebrow">Keep your free trials free</p>
+      <h1>Know what’s ending.<br><span>Before it charges.</span></h1>
+      <p class="muted-copy">A simple place to keep track of trials and free tiers, so a forgotten renewal doesn’t catch you off guard.</p>
+    </div>
+    <p class="brand-footnote">Your subscriptions, on your terms.</p>
+  </div>
+  <div class="form-panel">
+    <div class="form-card">
+      <p class="eyebrow">Welcome back</p>
+      <h2>Log in to StillFree</h2>
+      <p class="form-intro">Pick up where you left off.</p>
+      {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+      <form method="post" action="/api/login">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" autocomplete="email" required maxlength="255" value="{{ email }}" placeholder="you@example.com">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <button type="submit">Log in <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="form-switch">New to StillFree? <a href="/api/signup">Create an account</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

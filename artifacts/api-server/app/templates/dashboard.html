@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Your trials · StillFree{% endblock %}
+{% block content %}
+<div class="stillfree-app">
+  <header class="sf-topbar">
+    <a class="wordmark" href="/api/dashboard" aria-label="StillFree home">stillfree<span>.</span></a>
+    <div class="sf-account">
+      <span class="sf-email">{{ user.email }}</span>
+      <form method="post" action="/api/logout">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+        <button class="sf-logout" type="submit">Log out</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="sf-dashboard">
+    <section class="sf-intro" aria-labelledby="dashboard-title">
+      <div>
+        <p class="eyebrow">Your personal trial list</p>
+        <h1 id="dashboard-title">Keep the free<br class="sf-desktop-break"> in <span>StillFree.</span></h1>
+        <p class="sf-intro-copy">A clear view of what’s ending, and what it could cost next.</p>
+      </div>
+      <a class="sf-primary-button" href="/api/services/new"><span aria-hidden="true">＋</span> Add a trial</a>
+    </section>
+
+    <section class="sf-overview" aria-label="Trial overview">
+      <div class="sf-risk">
+        <span class="sf-stat-label">Money at risk</span>
+        <strong>{{ money_at_risk|inr }}</strong>
+        <span class="sf-stat-note">Across your active trials</span>
+      </div>
+      <div class="sf-count">
+        <span class="sf-count-mark" aria-hidden="true"></span>
+        <div><strong>{{ active_count }}</strong><span>active {{ 'trial' if active_count == 1 else 'trials' }}</span></div>
+      </div>
+      <p class="sf-overview-note">A little notice can make all the difference.</p>
+    </section>
+
+    <section class="sf-list-section" aria-labelledby="trial-list-title">
+      <div class="sf-list-heading">
+        <div>
+          <p class="eyebrow">The details</p>
+          <h2 id="trial-list-title">Your trials</h2>
+        </div>
+        <form class="sf-filter" method="get" action="/api/dashboard">
+          <label for="category-filter">Show</label>
+          <select id="category-filter" name="category" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            {% for category in categories %}
+              <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+            {% endfor %}
+          </select>
+          <noscript><button class="sf-filter-button" type="submit">Apply</button></noscript>
+        </form>
+      </div>
+
+      {% if services %}
+        <div class="sf-trial-list">
+          {% for row in services %}
+            <article class="sf-trial-row">
+              <div class="sf-trial-main">
+                <div class="sf-trial-title-line">
+                  <h3>{{ row.name }}</h3>
+                  <span class="sf-badge sf-badge-{{ row.badge_class }}">{{ row.badge_label }}</span>
+                </div>
+                <span class="sf-category">{{ row.category }}</span>
+              </div>
+              <div class="sf-expiry">
+                <span class="sf-row-label">Trial ends</span>
+                <time datetime="{{ row.expires_on.isoformat() }}">{{ row.expires_on.strftime('%b %d, %Y') }}</time>
+                <span class="sf-days">{% if row.days_left < 0 %}Ended {{ row.days_left|abs }} days ago{% elif row.days_left == 0 %}Ends today{% elif row.days_left == 1 %}1 day left{% else %}{{ row.days_left }} days left{% endif %}</span>
+              </div>
+              <div class="sf-price">
+                <span class="sf-row-label">After trial</span>
+                {% if row.price_after_trial is none %}
+                  <span class="sf-price-unknown">Not set</span>
+                {% else %}
+                  <strong>{{ row.price_after_trial|inr }}</strong>
+                {% endif %}
+                {% if row.cancel_url %}
+                  <a class="sf-cancel-link" href="{{ row.cancel_url }}" target="_blank" rel="noopener noreferrer">Cancellation page <span aria-hidden="true">↗</span></a>
+                {% endif %}
+              </div>
+              <div class="sf-row-actions">
+                <a class="sf-edit-link" href="/api/services/{{ row.id }}/edit">Edit<span class="sf-visually-hidden"> {{ row.name }}</span></a>
+                <form class="sf-delete-form" method="post" action="/api/services/{{ row.id }}/delete" data-trial-name="{{ row.name }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token(request) }}">
+                  <button class="sf-delete-button" type="button" data-delete-trigger aria-label="Delete {{ row.name }}" disabled>Delete</button>
+                </form>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+        <p id="delete-unavailable" class="sf-delete-unavailable">To delete a trial, enable JavaScript and use a browser that supports confirmation dialogs.</p>
+      {% elif selected_category %}
+        <div class="sf-empty-state">
+          <span class="sf-empty-kicker">Nothing in this corner yet</span>
+          <h3>No {{ selected_category }} trials</h3>
+          <p>Try another category or add a trial to keep its end date in view.</p>
+          <div class="sf-empty-actions">
+            <a class="sf-primary-button" href="/api/services/new"><span aria-hidden="true">＋</span> Add a trial</a>
+            <a class="sf-text-link" href="/api/dashboard">Show all trials</a>
+          </div>
+        </div>
+      {% else %}
+        <div class="sf-empty-state">
+          <span class="sf-empty-kicker">A little space to begin</span>
+          <h3>No trials on your list</h3>
+          <p>Add a free trial and we’ll keep the renewal date and price together, right here.</p>
+          <a class="sf-primary-button" href="/api/services/new"><span aria-hidden="true">＋</span> Add your first trial</a>
+        </div>
+      {% endif %}
+    </section>
+    <footer class="sf-footer"><span>Made for a little more peace of mind.</span><span>{{ today.strftime('%A, %B %-d') }}</span></footer>
+  </main>
+  {% if services %}
+    <dialog id="delete-trial-dialog" class="sf-delete-dialog" aria-labelledby="delete-trial-title" aria-describedby="delete-trial-description delete-trial-note">
+      <h2 id="delete-trial-title">Delete trial?</h2>
+      <p id="delete-trial-description">Remove <strong id="delete-trial-name"></strong> from your list?</p>
+      <p id="delete-trial-note" class="sf-delete-note">This only removes the trial from StillFree. It does not cancel your subscription with the service.</p>
+      <div class="sf-delete-dialog-actions">
+        <button id="delete-trial-cancel" class="sf-dialog-cancel" type="button" autofocus>Cancel</button>
+        <button id="delete-trial-confirm" class="sf-dialog-confirm" type="button">Delete trial</button>
+      </div>
+    </dialog>
+    <script src="/api/static/delete-confirmation.js" defer></script>
+  {% endif %}
+</div>
+{% endblock %}

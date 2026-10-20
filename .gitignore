@@ -1,0 +1,108 @@
+# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# compiled output
+dist
+tmp
+out-tsc
+*.tsbuildinfo
+.expo
+.expo-shared
+
+# dependencies
+node_modules
+.pythonlibs/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+# Replit
+.cache/
+.local/
+
+# Private environment, credentials, and machine-local configuration
+.env
+.env.*
+.envrc
+.secrets/
+.secrets.*
+secrets/
+secrets.json
+secrets.toml
+secrets.yaml
+secrets.yml
+.streamlit/secrets.toml
+.config/
+.conversation/
+.upm/
+.aws/
+.ssh/
+.kube/
+.netrc
+.pgpass
+.git-credentials
+.pypirc
+.npmrc.local
+.replit.local*
+credentials*.json
+*.credentials.json
+service-account*.json
+client_secret*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local databases, their journals, and database backups
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.sqlitedb
+*.dump
+*.backup
+pgdata/
+postgres-data/
+
+# Private uploads and generated/local outputs (not application source)
+/attached_assets/
+/generated-artifacts/
+*.log
+*.pid
+.coverage
+htmlcov/

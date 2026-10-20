@@ -1,0 +1,33 @@
+kind = "web"
+previewPath = "/"
+title = "StillFree"
+description = "StillFree server-rendered Python FastAPI/Jinja2 app for private free-trial tracking and daily reminders. Web registration hosts the existing Python app, not a React UI."
+version = "1.0.0"
+id = "artifacts/stillfree"
+router = "path"
+
+[[services]]
+localPort = 19606
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/api-server run dev"
+
+[services.production]
+
+[services.production.build]
+args = ["sh", "-c", "pnpm install --frozen-lockfile && uv sync --frozen"]
+
+[services.production.build.env]
+NODE_ENV = "production"
+
+[services.production.run]
+args = ["uv", "run", "--no-sync", "python", "artifacts/api-server/run.py"]
+
+[services.production.run.env]
+PORT = "19606"
+NODE_ENV = "production"
+
+[services.production.health.startup]
+path = "/api/healthz"

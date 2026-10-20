@@ -1,0 +1,24 @@
+[project]
+name = "repl-nix-workspace"
+version = "0.1.0"
+description = "StillFree — track free trials and avoid unwanted renewal charges"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.20.0",
+    "apscheduler>=3.11,<4",
+    "bcrypt>=5.0.0",
+    "fastapi>=0.151.0",
+    "httpx>=0.28.1",
+    "itsdangerous>=2.2.0",
+    "jinja2>=3.1.6",
+    "psycopg[binary]>=3.3.6",
+    "pytest>=9.1.1",
+    "python-multipart>=0.0.32",
+    "sqlalchemy>=2.1.5",
+    "uvicorn>=0.54.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["artifacts/api-server/tests"]
+pythonpath = ["artifacts/api-server"]
+addopts = "-ra"

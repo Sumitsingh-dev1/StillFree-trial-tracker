@@ -1,0 +1,31 @@
+modules = ["nodejs-24", "python-base-3.13", "postgresql-16"]
+
+[deployment]
+router = "application"
+deploymentTarget = "vm"
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[nix]
+channel = "stable-25_05"
+packages = ["cargo", "libiconv", "postgresql", "rustc"]
+
+[userenv]
+
+[userenv.shared]
+REMINDERS_ENABLED = "true"
+REMINDER_DELIVERY_MODE = "test"
+RESEND_FROM_EMAIL = "StillFree <onboarding@resend.dev>"

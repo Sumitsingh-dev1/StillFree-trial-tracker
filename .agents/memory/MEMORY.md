@@ -1,0 +1,7 @@
+- [Python web artifact registration](artifact-registration.md) — web bootstrap identity can host Python; use validated service replacement, not immutable-kind edits.
+- [Non-interactive Drizzle errors](drizzle-noninteractive-errors.md) — a destructive-change prompt can fail without a terminal yet return success; exit status alone is insufficient.
+- [Post-merge environment flags](post-merge-environment.md) — the setup runner can inherit internal production flags during a development merge; use the documented deployment marker.
+- [Schema reflection limits](schema-reflection.md) — SQLite inline uniqueness and PostgreSQL check formatting need dialect-aware comparison.
+- [PostgreSQL test bootstrap](postgres-test-bootstrap.md) — bootstrap timeouts can leave child processes writing during cleanup; distinguish fixture failures from app regressions.
+- [pnpm transitive security updates](pnpm-security-updates.md) — named recursive updates can leave vulnerable transitive versions locked beneath unchanged parents.
+- [Safe Git publication](git-publish-privacy.md) — scan commit history as well as files; `.gitignore` cannot remove data already committed.
